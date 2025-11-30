@@ -1,5 +1,6 @@
 package com.addie.mixin.client;
 
+import com.addie.JumpModKeybind;
 import com.addie.duck.DoubleJumpDuck;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
@@ -40,7 +41,9 @@ public abstract class PlayerEntityMixinClient implements DoubleJumpDuck {
 
     @Inject(method = "tickMovement", at = @At("HEAD"))
     private void preTick(CallbackInfo ci) {
-        ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
+        if (!JumpModKeybind.ENABLED) return;
+
+        ClientPlayerEntity player = (ClientPlayerEntity)(Object)this;
         boolean jumping = player.input.jumping;
         boolean sneaking = player.input.sneaking;
 
@@ -63,9 +66,13 @@ public abstract class PlayerEntityMixinClient implements DoubleJumpDuck {
                 }
             }
 
-            if (fullyCharged && boostReadyCounter > 0) boostReadyCounter--;
+            if (fullyCharged && boostReadyCounter > 0) {
+                boostReadyCounter--;
+            }
         } else {
-            if (!hasLeftGround && prevJumping) hasLeftGround = true;
+            if (!hasLeftGround && prevJumping) {
+                hasLeftGround = true;
+            }
         }
 
         prevJumping = jumping;
@@ -78,30 +85,41 @@ public abstract class PlayerEntityMixinClient implements DoubleJumpDuck {
 
     @Inject(method = "tickMovement", at = @At("TAIL"))
     private void applyBoostAndMidair(CallbackInfo ci) {
-        ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
+        if (!JumpModKeybind.ENABLED) return;
+
+        ClientPlayerEntity player = (ClientPlayerEntity)(Object)this;
         boolean jumping = player.input.jumping;
         boolean sneaking = player.input.sneaking;
 
         if (fullyCharged && boostReadyCounter == 0 && sneaking && !isBoosting && player.isOnGround()) {
+
             isBoosting = true;
             boostingTicks = BOOST_DURATION_TICKS;
+
             Vec3d vel = player.getVelocity();
             player.setVelocity(vel.x, BOOST_JUMP_VELOCITY, vel.z);
             player.velocityModified = true;
 
             ClientWorld world = (ClientWorld) player.getWorld();
             player.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1f);
+
             for (int i = 0; i < 20; i++) {
                 double ox = (Math.random() - 0.5) * 2.0;
                 double oy = Math.random() * 0.5;
                 double oz = (Math.random() - 0.5) * 2.0;
-                world.addParticle(ParticleTypes.CLOUD, player.getX() + ox, player.getY() + oy, player.getZ() + oz, 0, 0, 0);
+                world.addParticle(ParticleTypes.CLOUD,
+                        player.getX() + ox,
+                        player.getY() + oy,
+                        player.getZ() + oz,
+                        0, 0, 0);
             }
 
             crouchTicks = 0;
             fullyCharged = false;
 
-            if (!player.getAbilities().creativeMode) player.getHungerManager().addExhaustion(HUNGER_COST_BOOST);
+            if (!player.getAbilities().creativeMode) {
+                player.getHungerManager().addExhaustion(HUNGER_COST_BOOST);
+            }
         }
 
         if (doubleJumpCooldown == 0 &&
@@ -110,27 +128,38 @@ public abstract class PlayerEntityMixinClient implements DoubleJumpDuck {
                 jumping && !prevJumping &&
                 extraJumps > 0) {
 
-            float yawRad = (float) Math.toRadians(player.getYaw());
+            float yawRad = (float)Math.toRadians(player.getYaw());
             double forwardX = -Math.sin(yawRad) * MIDAIR_FORWARD_BOOST;
-            double forwardZ = Math.cos(yawRad) * MIDAIR_FORWARD_BOOST;
+            double forwardZ =  Math.cos(yawRad) * MIDAIR_FORWARD_BOOST;
 
             Vec3d vel = player.getVelocity();
-            player.setVelocity(vel.x + forwardX, vel.y + MIDAIR_JUMP_BOOST, vel.z + forwardZ);
+            player.setVelocity(
+                    vel.x + forwardX,
+                    vel.y + MIDAIR_JUMP_BOOST,
+                    vel.z + forwardZ
+            );
             player.velocityModified = true;
 
             ClientWorld world = (ClientWorld) player.getWorld();
             player.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1f);
+
             for (int i = 0; i < 20; i++) {
                 double ox = (Math.random() - 0.5) * 2.0;
                 double oy = Math.random() * 0.5;
                 double oz = (Math.random() - 0.5) * 2.0;
-                world.addParticle(ParticleTypes.CLOUD, player.getX() + ox, player.getY() + oy, player.getZ() + oz, 0, 0, 0);
+                world.addParticle(ParticleTypes.CLOUD,
+                        player.getX() + ox,
+                        player.getY() + oy,
+                        player.getZ() + oz,
+                        0, 0, 0);
             }
 
             extraJumps--;
             doubleJumpCooldown = DOUBLE_JUMP_COOLDOWN_TICKS;
 
-            if (!player.getAbilities().creativeMode) player.getHungerManager().addExhaustion(HUNGER_COST_DOUBLE);
+            if (!player.getAbilities().creativeMode) {
+                player.getHungerManager().addExhaustion(HUNGER_COST_DOUBLE);
+            }
         }
     }
 

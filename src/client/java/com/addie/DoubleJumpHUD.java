@@ -26,6 +26,8 @@ public class DoubleJumpHUD implements HudRenderCallback {
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.player == null) return;
 
+        if (!JumpModKeybind.ENABLED) return;
+
         DoubleJumpDuck duck = (DoubleJumpDuck) mc.player;
 
         int screenWidth = mc.getWindow().getScaledWidth();
@@ -39,8 +41,7 @@ public class DoubleJumpHUD implements HudRenderCallback {
         }
 
         int cooldown = duck.jumpSquared$getCooldown();
-        int cooldownMax = duck.jumpSquared$getCooldownMax();
-        if (cooldownMax <= 0) cooldownMax = 1;
+        int cooldownMax = Math.max(1, duck.jumpSquared$getCooldownMax());
 
         float cdPct = 1f - ((float) cooldown / cooldownMax);
         int cdFillWidth = (int) (BAR_WIDTH * cdPct);
@@ -64,8 +65,7 @@ public class DoubleJumpHUD implements HudRenderCallback {
         }
 
         int charge = duck.jumpSquared$getCrouchCharge();
-        int chargeMax = duck.jumpSquared$getCrouchChargeMax();
-        if (chargeMax <= 0) chargeMax = 1;
+        int chargeMax = Math.max(1, duck.jumpSquared$getCrouchChargeMax());
 
         float chargePct = Math.min(1f, (float) charge / chargeMax);
         int chargeFillWidth = (int) (BAR_WIDTH * chargePct);

@@ -19,7 +19,8 @@
 			"com.addie.JumpSquared"
 		],
 		"client": [
-			"com.addie.JumpSquaredClient"
+			"com.addie.JumpSquaredClient",
+            "com.addie.JumpModKeybind"
 		],
 		"fabric-datagen": [
 			"com.addie.JumpSquaredDataGenerator"

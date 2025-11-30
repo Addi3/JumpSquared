@@ -12,5 +12,7 @@ public class JumpSquaredLangProvider extends FabricLanguageProvider {
     @Override
     public void generateTranslations(TranslationBuilder translations) {
 
+        translations.add("key.jumpmod.toggle", "Toggle Jump Mod");
+        translations.add("category.jumpmod", "Jump Mod");
     }
 }

@@ -1,6 +1,4 @@
 {
-  "category.jumpsquared": "JumpSquared Controls",
-  "key.jumpsquared.toggle_doublejump": "Toggle Double Jump",
-  "text.jumpsquared.disabled": "Double jump disabled",
-  "text.jumpsquared.enabled": "Double jump enabled"
+  "category.jumpmod": "Jump Mod",
+  "key.jumpmod.toggle": "Toggle Jump Mod"
 }
